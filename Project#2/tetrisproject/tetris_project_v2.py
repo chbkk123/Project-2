@@ -30,7 +30,7 @@ LIGHTYELLOW = (175, 175,  20)
 
 BORDERCOLOR = BLUE
 BGCOLOR = WHITE
-TEXTCOLOR = WHITE
+TEXTCOLOR = BLACK
 TEXTSHADOWCOLOR = GRAY
 COLORS      = (     BLUE,      GREEN,      RED,      YELLOW)
 LIGHTCOLORS = (LIGHTBLUE, LIGHTGREEN, LIGHTRED, LIGHTYELLOW)
@@ -158,14 +158,13 @@ def main():
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
-    BIGFONT = pygame.font.Font('freesansbold.ttf', 100)
+    BIGFONT = pygame.font.Font('freesansbold.ttf', 50)
     pygame.display.set_caption('Tetromino')
 
     while True:
         
         runGame()
-        pygame.mixer.music.stop()
-
+        showTextScreen('Game Over')
 
 def runGame():
     board = getBlankBoard()
@@ -175,9 +174,8 @@ def runGame():
     movingDown = False
     movingLeft = False
     movingRight = False
-
     score = 0
-    level, fallFreq = calculateLevelAndFallFreq(score)
+    fallFreq = calculateLevelAndFallFreq(score)
 
     fallingPiece = getNewPiece()
     nextPiece = getNewPiece()
@@ -225,14 +223,22 @@ def runGame():
                     if not isValidPosition(board, fallingPiece):
                         fallingPiece['rotation'] = (fallingPiece['rotation'] - 1) % len(PIECES[fallingPiece['shape']])
 
+                elif event.key == K_SPACE:
+                    movingDown = False
+                    movingLeft = False
+                    movingRight = False
+                    for i in range(1, BOARDHEIGHT):
+                        if not isValidPosition(board, fallingPiece, adjY=i):
+                            break
+                    fallingPiece['y'] += i - 1                    
 
 
-                    
-
+        
     
         if time.time() - lastFallTime > fallFreq:
             if not isValidPosition(board, fallingPiece, adjY=1):
                 addToBoard(board, fallingPiece)
+                score += removeCompleteLines(board)
                 fallingPiece = None
             else:
                 fallingPiece['y'] += 1
@@ -282,6 +288,8 @@ def showTextScreen(text):
     pressKeyRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2) + 100)
     DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
 
+    DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
+
     while checkForKeyPress() == None:
         pygame.display.update()
         FPSCLOCK.tick()
@@ -297,9 +305,8 @@ def checkForQuit():
 
 
 def calculateLevelAndFallFreq(score):
-    level = int(score / 10) + 1
-    fallFreq = 0.27 - (level * 0.02)
-    return level, fallFreq
+    fallFreq = 0.25
+    return fallFreq
 
 def getNewPiece():
     shape = random.choice(list(PIECES.keys()))
@@ -341,7 +348,27 @@ def isValidPosition(board, piece, adjX=0, adjY=0):
                 return False
     return True
 
+def isCompleteLine(board, y):
+    for x in range(BOARDWIDTH):
+        if board[x][y] == BLANK:
+            return False
+    return True
 
+
+def removeCompleteLines(board):
+    numLinesRemoved = 0
+    y = BOARDHEIGHT - 1
+    while y >= 0:
+        if isCompleteLine(board, y):
+            for pullDownY in range(y, 0, -1):
+                for x in range(BOARDWIDTH):
+                    board[x][pullDownY] = board[x][pullDownY-1]
+            for x in range(BOARDWIDTH):
+                board[x][0] = BLANK
+            numLinesRemoved += 1
+        else:
+            y -= 1
+    return numLinesRemoved
 
 def convertToPixelCoords(boxx, boxy):
     return (XMARGIN + (boxx * BOXSIZE)), (TOPMARGIN + (boxy * BOXSIZE))
@@ -364,17 +391,6 @@ def drawBoard(board):
             drawBox(x, y, board[x][y])
 
 
-def drawStatus(score, level):
-    scoreSurf = BASICFONT.render('Score: %s' % score, True, TEXTCOLOR)
-    scoreRect = scoreSurf.get_rect()
-    scoreRect.topleft = (WINDOWWIDTH - 150, 20)
-    DISPLAYSURF.blit(scoreSurf, scoreRect)
-
-    levelSurf = BASICFONT.render('Level: %s' % level, True, TEXTCOLOR)
-    levelRect = levelSurf.get_rect()
-    levelRect.topleft = (WINDOWWIDTH - 150, 50)
-    DISPLAYSURF.blit(levelSurf, levelRect)
-
 
 def drawPiece(piece, pixelx=None, pixely=None):
     shapeToDraw = PIECES[piece['shape']][piece['rotation']]
@@ -391,9 +407,9 @@ def drawPiece(piece, pixelx=None, pixely=None):
 def drawNextPiece(piece):
     nextSurf = BASICFONT.render('Next:', True, TEXTCOLOR)
     nextRect = nextSurf.get_rect()
-    nextRect.topleft = (WINDOWWIDTH - 120, 80)
+    nextRect.topleft = (WINDOWWIDTH - 140, 30)
     DISPLAYSURF.blit(nextSurf, nextRect)
-    drawPiece(piece, pixelx=WINDOWWIDTH-120, pixely=100)
+    drawPiece(piece, pixelx=WINDOWWIDTH-100, pixely=5)
 
 
 if __name__ == '__main__':
