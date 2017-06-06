@@ -1,4 +1,4 @@
-import random, time, pygame, sys
+import random, time, pygame, sys, os
 from pygame.locals import *
 
 FPS = 25
@@ -14,6 +14,8 @@ MOVEDOWNFREQ = 0.1
 
 XMARGIN = int((WINDOWWIDTH - BOARDWIDTH * BOXSIZE) / 2)
 TOPMARGIN = WINDOWHEIGHT - (BOARDHEIGHT * BOXSIZE) - 5
+
+
 
 #               R    G    B
 WHITE       = (255, 255, 255)
@@ -152,6 +154,8 @@ PIECES = {'S': S_SHAPE_TEMPLATE,
           'T': T_SHAPE_TEMPLATE}
 
 
+
+
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT
     pygame.init()
@@ -160,6 +164,7 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
     BIGFONT = pygame.font.Font('freesansbold.ttf', 50)
     pygame.display.set_caption('Tetromino')
+
 
     while True:
         
@@ -175,7 +180,7 @@ def runGame():
     movingLeft = False
     movingRight = False
     score = 0
-    fallFreq = calculateLevelAndFallFreq(score)
+    fallFreq = 0.25
 
     fallingPiece = getNewPiece()
     nextPiece = getNewPiece()
@@ -238,7 +243,7 @@ def runGame():
         if time.time() - lastFallTime > fallFreq:
             if not isValidPosition(board, fallingPiece, adjY=1):
                 addToBoard(board, fallingPiece)
-                score += removeCompleteLines(board)
+                removeCompleteLines(board)
                 fallingPiece = None
             else:
                 fallingPiece['y'] += 1
@@ -304,9 +309,6 @@ def checkForQuit():
         pygame.event.post(event)
 
 
-def calculateLevelAndFallFreq(score):
-    fallFreq = 0.25
-    return fallFreq
 
 def getNewPiece():
     shape = random.choice(list(PIECES.keys()))
@@ -366,6 +368,7 @@ def removeCompleteLines(board):
             for x in range(BOARDWIDTH):
                 board[x][0] = BLANK
             numLinesRemoved += 1
+            pygame.mixer.Sound('laser5.ogg')
         else:
             y -= 1
     return numLinesRemoved
