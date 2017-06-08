@@ -152,6 +152,7 @@ PIECES = {'S': S_SHAPE_TEMPLATE,
           'T': T_SHAPE_TEMPLATE}
 
 
+
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT, BASICFONT2, BIGFONT
     pygame.init()
@@ -160,10 +161,11 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
     BASICFONT2 = pygame.font.Font('freesansbold.ttf', 30)
     BIGFONT = pygame.font.Font('freesansbold.ttf', 50)
-    pygame.display.set_caption('Tetromino')
+    pygame.display.set_caption('재미없는 테트리스 Extreme')
+    background_image = pygame.image.load("back.jpg").convert()
 
-    DISPLAYSURF.fill(BGCOLOR)
-    showTextScreen('Tetromino')
+    DISPLAYSURF.blit(background_image, [0, -50])
+    showTextScreen('Bored Tetris')
     while True:
         pygame.mixer.music.load('bgm1.mid')
         pygame.mixer.music.play(-1, 0.0)
@@ -174,6 +176,8 @@ def main():
         showTextScreen('Game Over')
 
 def runGame():
+    background_image = pygame.image.load("back.jpg").convert()
+
     board = getBlankBoard()
     lastMoveDownTime = time.time()
     lastMoveSidewaysTime = time.time()
@@ -187,10 +191,11 @@ def runGame():
     
     savedPiece = None
     tempPiece = None
+    saveOnce = 0
     fallingPiece = getNewPiece()
     nextPiece = getNewPiece()
 
-    saveOnce = 0
+    
 
     while True:
         if fallingPiece == None:
@@ -260,9 +265,7 @@ def runGame():
                         tempPiece = None
                         break
                 
-                    
-                    
-                      
+        
         
     
         if time.time() - lastFallTime > fallFreq:
@@ -278,6 +281,7 @@ def runGame():
                     effect = pygame.mixer.Sound('tetris.ogg')
                     effect.play()
                     showTetristext()
+                    pygame.time.delay(500)
                 else:
                     score += tempscore
                     tempscore = 0
@@ -290,6 +294,7 @@ def runGame():
 
 
         DISPLAYSURF.fill(BGCOLOR)
+        DISPLAYSURF.blit(background_image, [-200, -50])
         drawBoard(board)
         drawStatus(score, level)
         drawNextPiece(nextPiece)
@@ -347,8 +352,10 @@ def showTetristext():
     titleKeySurf, titleKeyRect = makeTextObjs('Tetris!', BASICFONT2, RED)
     titleKeyRect.center = (int(WINDOWWIDTH / 2), 40)
     DISPLAYSURF.blit(titleKeySurf, titleKeyRect)
-    pygame.time.delay(1000)
 
+    while checkForKeyPress() == None:
+        pygame.display.update()
+        FPSCLOCK.tick()
 
 def checkForQuit():
     for event in pygame.event.get(QUIT):
@@ -474,14 +481,14 @@ def drawPiece(piece, pixelx=None, pixely=None):
 def drawNextPiece(piece):
     nextSurf = BASICFONT.render('Next', True, TEXTCOLOR)
     nextRect = nextSurf.get_rect()
-    nextRect.topleft = (WINDOWWIDTH - 80, 20)
+    nextRect.topleft = (WINDOWWIDTH - 85, 20)
     DISPLAYSURF.blit(nextSurf, nextRect)
     drawPiece(piece, pixelx=WINDOWWIDTH-100, pixely=40)
 
 def drawSavedPiece(piece):
-    savedSurf = BASICFONT.render('Saved', True, TEXTCOLOR)
+    savedSurf = BASICFONT.render('Saved (S)', True, TEXTCOLOR)
     savedRect = savedSurf.get_rect()
-    savedRect.topleft = (WINDOWWIDTH - 80, 130)
+    savedRect.topleft = (WINDOWWIDTH - 85, 130)
     DISPLAYSURF.blit(savedSurf, savedRect)
     if piece != None:
         drawPiece(piece, pixelx=WINDOWWIDTH-100, pixely=150)
