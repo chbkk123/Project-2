@@ -174,7 +174,7 @@ def main():
         pygame.mixer.music.stop() #게임이 종료되면 재생중이던 음악을 정지
         pygame.mixer.music.load('Music/gameover.mp3') 
         pygame.mixer.music.play(1,0.0) # gameover.mp3 배경음을 0.0초부터 1번만 재생
-        showTextScreen('Game Over') # Game Over라는 문자와 함께 textscreen을출력
+        showTextScreen('Game Over') # Game Over라는 문자와 함께 textscreen을 출력
 
 def runGame(): #메인 게임 함수
     background_image = pygame.image.load("back.jpg").convert()
@@ -245,7 +245,7 @@ def runGame(): #메인 게임 함수
                         fallingPiece['rotation'] = (fallingPiece['rotation'] - 1) % len(PIECES[fallingPiece['shape']])
                     effect = pygame.mixer.Sound('Sound/swap.wav')
                     effect.set_volume(.3)
-                    effect.play() #위 키가 눌리면 블럭을 회전시키고 swap.wav 효과음을 재생
+                    effect.play() #위 키가 눌리면 블럭을 회전시키고 swap.wav 효과음을 재생. 만약 회전했을때 블럭이 벽을 뚫는다면 회전하지 않음.
                         
                 elif event.key == K_SPACE:
                     movingDown = False
@@ -282,7 +282,7 @@ def runGame(): #메인 게임 함수
                         break #S키가 늘렸을때, 저장된 블럭이 있지만 SaveOnce가 False면 떨어지는 블럭과 저장된 블럭을 교환하고 블럭을 맨 위에서 다시 떨어뜨림.
    
     
-        if time.time() - lastFallTime > fallFreq: # 블럭이 떨어뜨림
+        if time.time() - lastFallTime > fallFreq: # 블럭이 떨어짐
             if not isValidPosition(board, fallingPiece, adjY=1): # 블럭이 바닥이나 다른 블럭과 닿으면
                 addToBoard(board, fallingPiece) #이미지로만 보여주던 떨어지던 블럭을 실제 보드 위치에 설정
                 tempscore = removeCompleteLines(board)*10 #보드를 확인해서 완성된 줄이 있으면 제거하고 줄 하나당 임시 점수 10점을 부여
