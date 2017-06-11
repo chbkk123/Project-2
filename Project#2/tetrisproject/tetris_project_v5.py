@@ -2,7 +2,7 @@ import random, time, pygame, sys, os
 from pygame.locals import *
 
 FPS = 25
-WINDOWWIDTH = 400
+WINDOWWIDTH = 420
 WINDOWHEIGHT = 500
 BOXSIZE = 20
 BOARDWIDTH = 10
@@ -161,19 +161,18 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
     BASICFONT2 = pygame.font.Font('freesansbold.ttf', 30)
     BIGFONT = pygame.font.Font('freesansbold.ttf', 50)
-    pygame.display.set_caption('재미없는 테트리스 Extreme')
+    pygame.display.set_caption('테트리스')
     background_image = pygame.image.load("back.jpg").convert()
-
+    pygame.mixer.music.load('Music/title.mid')
+    pygame.mixer.music.play(-1,0.0)
     DISPLAYSURF.blit(background_image, [0, -50])
-    pygame.mixer.music.load('title.mid')
-    pygame.mixer.music.play(-1, 0.0)
-    showTextScreen('Bored Tetris')
+    showTextScreen('Tetris Project')
 
     while True:
 
         runGame()
         pygame.mixer.music.stop()
-        pygame.mixer.music.load('gameover.mp3')
+        pygame.mixer.music.load('Music/gameover.mp3')
         pygame.mixer.music.play(1,0.0)
         showTextScreen('Game Over')
 
@@ -190,7 +189,8 @@ def runGame():
     tempscore = 0
     score = 0
     level, fallFreq = calculateLevelAndFallFreq(score)
-    
+    pygame.mixer.music.load('Music/game.mid')
+    pygame.mixer.music.play(-1,0.0)
     savedPiece = None
     tempPiece = None
     saveOnce = 0
@@ -241,7 +241,10 @@ def runGame():
                     fallingPiece['rotation'] = (fallingPiece['rotation'] + 1) % len(PIECES[fallingPiece['shape']])
                     if not isValidPosition(board, fallingPiece):
                         fallingPiece['rotation'] = (fallingPiece['rotation'] - 1) % len(PIECES[fallingPiece['shape']])
-
+                    effect = pygame.mixer.Sound('Sound/swap.wav')
+                    effect.set_volume(.3)
+                    effect.play()
+                        
                 elif event.key == K_SPACE:
                     movingDown = False
                     movingLeft = False
@@ -252,6 +255,14 @@ def runGame():
                     fallingPiece['y'] += i - 1
 
                 elif event.key == K_s:
+                    if saveOnce == 0:
+                        effect = pygame.mixer.Sound('Sound/save.wav')
+                        effect.set_volume(.3)
+                        effect.play()
+                    else:
+                        effect = pygame.mixer.Sound('Sound/aldsave.wav')
+                        effect.set_volume(.3)
+                        effect.play()
                     if savedPiece == None and saveOnce == 0:
                         savedPiece = fallingPiece
                         fallingPiece = None
@@ -263,37 +274,54 @@ def runGame():
                         fallingPiece = tempPiece
                         saveOnce = 1
                         tempPiece = None
+                        fallingPiece['y'] = -2
+                        fallingPiece['x'] = int(BOARDWIDTH / 2) - int(TEMPLATEWIDTH / 2)
+                        level, fallFreq = calculateLevelAndFallFreq(score)
                         break
-                
-        
-        
+   
     
         if time.time() - lastFallTime > fallFreq:
             if not isValidPosition(board, fallingPiece, adjY=1):
                 addToBoard(board, fallingPiece)
                 tempscore = removeCompleteLines(board)*10
-                if tempscore > 0 and tempscore < 40:
-                    effect = pygame.mixer.Sound('erase.ogg')
-                    effect.set.volume(.9)
+                if tempscore == 0:
+                    effect = pygame.mixer.Sound('Sound/down.wav')
+                    effect.set_volume(.3)
                     effect.play()
-                if tempscore == 40:
-                    score += 200
-                    tempscore = 0
-                    effect = pygame.mixer.Sound('down.wav')
-                    effect.set.volume(.9)
-                    effect.play()
-                    showTetristext()
-                    pygame.time.delay(500)
-                else:
                     score += tempscore
                     tempscore = 0
+                elif tempscore == 10:
+                    effect = pygame.mixer.Sound('Sound/1line.wav')
+                    effect.set_volume(.3)
+                    effect.play()
+                    score += tempscore
+                    tempscore = 0
+                elif tempscore == 20:
+                    effect = pygame.mixer.Sound('Sound/2line.wav')
+                    effect.set_volume(.3)
+                    effect.play()
+                    score += tempscore
+                    tempscore = 0
+                elif tempscore == 30:
+                    effect = pygame.mixer.Sound('Sound/3line.wav')
+                    effect.set_volume(.3)
+                    effect.play()
+                    score += tempscore
+                    tempscore = 0
+                elif tempscore == 40:
+                    score += 100
+                    tempscore = 0
+                    effect = pygame.mixer.Sound('Sound/tetris.wav')
+                    effect.set_volume(.3)
+                    effect.play()
+                    showTetristext()
+                    pygame.time.delay(500)                    
                 level, fallFreq = calculateLevelAndFallFreq(score)
                 saveOnce = 0
                 fallingPiece = None
             else:
                 fallingPiece['y'] += 1
                 lastFallTime = time.time()
-
         
         DISPLAYSURF.fill(BGCOLOR)
         DISPLAYSURF.blit(background_image, [-200, -50])
@@ -307,23 +335,13 @@ def runGame():
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
-
 def makeTextObjs(text, font, color):
     surf = font.render(text, True, color)
     return surf, surf.get_rect()
 
-def bgmPlay(level):
-    if level < 3:
-        pygame.mixer.music.load('start.mid')
-        pygame.mixer.music.play(-1, 0.0)
-    else:
-        pygame.mixer.music.load('game.mid')
-        pygame.mixer.music.play(-1, 0.0)
-
 def terminate():
     pygame.quit()
     sys.exit()
-
 
 def checkForKeyPress():
     checkForQuit()
@@ -333,7 +351,6 @@ def checkForKeyPress():
             continue
         return event.key
     return None
-
 
 def showTextScreen(text):
     titleSurf, titleRect = makeTextObjs(text, BIGFONT, TEXTSHADOWCOLOR)
@@ -374,9 +391,8 @@ def checkForQuit():
             terminate()
         pygame.event.post(event)
 
-
 def calculateLevelAndFallFreq(score):
-    level = int(score / 100) + 1
+    level = int(score / 150) + 1
     fallFreq = 0.27 - (level * 0.02)
     return level, fallFreq
 
@@ -389,13 +405,11 @@ def getNewPiece():
                 'color': random.randint(0, len(COLORS)-1)}
     return newPiece
 
-
 def addToBoard(board, piece):
     for x in range(TEMPLATEWIDTH):
         for y in range(TEMPLATEHEIGHT):
             if PIECES[piece['shape']][piece['rotation']][y][x] != BLANK:
                 board[x + piece['x']][y + piece['y']] = piece['color']
-
 
 def getBlankBoard():
     board = []
@@ -403,10 +417,8 @@ def getBlankBoard():
         board.append([BLANK] * BOARDHEIGHT)
     return board
 
-
 def isOnBoard(x, y):
     return x >= 0 and x < BOARDWIDTH and y < BOARDHEIGHT
-
 
 def isValidPosition(board, piece, adjX=0, adjY=0):
     for x in range(TEMPLATEWIDTH):
@@ -426,7 +438,6 @@ def isCompleteLine(board, y):
             return False
     return True
 
-
 def removeCompleteLines(board):
     numLinesRemoved = 0
     y = BOARDHEIGHT - 1
@@ -445,14 +456,12 @@ def removeCompleteLines(board):
 def convertToPixelCoords(boxx, boxy):
     return (XMARGIN + (boxx * BOXSIZE)), (TOPMARGIN + (boxy * BOXSIZE))
 
-
 def drawBox(boxx, boxy, color, pixelx=None, pixely=None):
     if color == BLANK:
         return
     if pixelx == None and pixely == None:
         pixelx, pixely = convertToPixelCoords(boxx, boxy)
     pygame.draw.rect(DISPLAYSURF, COLORS[color], (pixelx + 1, pixely + 1, BOXSIZE - 1, BOXSIZE - 1))
-
 
 def drawBoard(board):
     pygame.draw.rect(DISPLAYSURF, BORDERCOLOR, (XMARGIN - 3, TOPMARGIN - 7, (BOARDWIDTH * BOXSIZE) + 8, (BOARDHEIGHT * BOXSIZE) + 8), 5)
@@ -462,16 +471,15 @@ def drawBoard(board):
         for y in range(BOARDHEIGHT):
             drawBox(x, y, board[x][y])
 
-
 def drawStatus(score, level):
     scoreSurf = BASICFONT.render('Score: %s' % score, True, TEXTCOLOR)
     scoreRect = scoreSurf.get_rect()
-    scoreRect.topleft = (WINDOWWIDTH - 385, 20)
+    scoreRect.topleft = (WINDOWWIDTH - 405, 20)
     DISPLAYSURF.blit(scoreSurf, scoreRect)
 
     levelSurf = BASICFONT.render('Level: %s' % level, True, TEXTCOLOR)
     levelRect = levelSurf.get_rect()
-    levelRect.topleft = (WINDOWWIDTH - 385, 50)
+    levelRect.topleft = (WINDOWWIDTH - 405, 50)
     DISPLAYSURF.blit(levelSurf, levelRect)
 
 
@@ -485,7 +493,6 @@ def drawPiece(piece, pixelx=None, pixely=None):
         for y in range(TEMPLATEHEIGHT):
             if shapeToDraw[y][x] != BLANK:
                 drawBox(None, None, piece['color'], pixelx + (x * BOXSIZE), pixely + (y * BOXSIZE))
-
 
 def drawNextPiece(piece):
     nextSurf = BASICFONT.render('Next', True, TEXTCOLOR)
