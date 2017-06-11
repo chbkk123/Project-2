@@ -166,7 +166,7 @@ def main():
     pygame.mixer.music.load('Music/title.mid') 
     pygame.mixer.music.play(-1,0.0) # title.mid 배경음을 0.0초부터 반복해서 재생
     DISPLAYSURF.blit(background_image, [0, -50]) #배경 이미지가 나타나는 위치를 설정
-    showTextScreen('Tetris Project') # Tetris Project라는 문자와 함께 textscreen을 출력
+    showTextScreen('Boring Tetris') # Boring Tetris라는 문자와 함께 textscreen을 출력
 
     while True:
 
