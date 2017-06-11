@@ -48,3 +48,6 @@ Tetris made with pygame
  
  ![](http://postfiles4.naver.net/MjAxNzA2MTFfMTE1/MDAxNDk3MTc0ODY3Njc1.kUbMOmOBRqvy5z0cH5RkZ_E64b-8ixCzDGzWU_hjLV4g.v3qhSIFetOdhumEJ_eGDICmoezgF7XNuYRDDE7xDLYEg.PNG.chbkk123/%EC%BA%A1%EC%B2%983.PNG?type=w3)
  ![](http://postfiles2.naver.net/MjAxNzA2MTFfMjYx/MDAxNDk3MTc0ODY3NDM1.GOrFccTGAEG_AWRxLY6IbK1JrhM6OS0ZrPDc6ZteymUg.PWN8Act0MouTOvwSO2Mky1EMSqkkf6VeHoMa5oXE1-8g.PNG.chbkk123/%EC%BA%A1%EC%B2%982.PNG?type=w3)
+
+
+ 자세한 정보는 [Boring Tetris Wiki](https://github.com/chbkk123/Project-2/wiki)에
