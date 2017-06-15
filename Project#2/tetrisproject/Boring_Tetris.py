@@ -1,3 +1,9 @@
+# 원본 
+# Tetromino (a Tetris clone)
+# By Al Sweigart al@inventwithpython.com
+# http://inventwithpython.com/pygame
+# Released under a "Simplified BSD" license
+
 import random, time, pygame, sys, os
 from pygame.locals import *
 

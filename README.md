@@ -1,5 +1,10 @@
 # Boring Tetris
 Tetris made with pygame
+원본
+# Tetromino (a Tetris clone)
+# By Al Sweigart al@inventwithpython.com
+# http://inventwithpython.com/pygame
+# Released under a "Simplified BSD" license
 
 ![](http://postfiles14.naver.net/MjAxNzA2MTFfMTEy/MDAxNDk3MTc0ODY4MzM3.EBXP_7YmC6960HLE69e75aIqG9RfuupGpvBtteBOsmog.nPiIGDex5dCrteibrL8LBaRISwnO-Mct4MBpXSaRGqAg.GIF.chbkk123/playthrough1.gif?type=w3)
 ![](http://postfiles2.naver.net/MjAxNzA2MTFfNTAg/MDAxNDk3MTc0ODY5MDUz.P_HTHtvUOJOkphxrM9KZqrLLSHCz7Twk0_ZucAkoaZAg.KyTNzbO2jBCOwRuciUAIaZcaXrGf4qsxuQ1mXvQXBWMg.GIF.chbkk123/playthrough3.gif?type=w3)
